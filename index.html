@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#121214">
+  <title>Live Joiner Project</title>
+   <link rel="stylesheet" href="style.css?v=2">
+</head>
+<body>
+
+  <!-- BOOT LOADING OVERLAY -->
+  <div id="bootLoader" class="boot-loader-overlay">
+    <div class="boot-loader-content">
+      <div class="boot-spinner-wrap">
+        <svg class="yt-spinner" viewBox="0 0 50 50">
+          <circle class="yt-spinner-path" cx="25" cy="25" r="20" fill="none" stroke-width="3.5" />
+        </svg>
+      </div>
+      <div class="boot-loader-brand">Live Joiner Fleet</div>
+      <div id="bootStatusText" class="boot-status-text">Connecting to Live Joiner...</div>
+      <div id="bootSubText" class="boot-sub-text">Securing cryptographic connection...</div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toastBox">Notification</div>
+
+  <!-- MOBILE TOP BAR -->
+  <header class="mobile-topbar">
+    <div class="mobile-topbar-brand">
+      <div class="brand-icon sm">
+        <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      </div>
+      <span class="mobile-topbar-title">Live Joiner</span>
+    </div>
+    <div class="mobile-topbar-actions">
+      <div id="mobileTopStreamStatus" class="mobile-top-status-pill" onclick="switchTab('dashboard')" title="Tap to view active stream">
+        <span class="pulse-dot idle"></span>
+        <span id="mobileTopStatusText">Idle</span>
+      </div>
+      <button id="btnMobileNavToggle" class="mobile-hamburger-btn" aria-label="Toggle Navigation Menu" onclick="toggleMobileNav()">
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- MOBILE NAV DRAWER BACKDROP & DRAWER -->
+  <div id="mobileNavBackdrop" class="mobile-nav-backdrop" onclick="closeMobileNav()"></div>
+  <aside id="mobileNavDrawer" class="mobile-nav-drawer">
+    <div class="mobile-drawer-header">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div class="brand-icon sm">
+          <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
+        <div>
+          <div style="font-weight: 700; font-size: 14px; color: #fff;">Live Joiner</div>
+          <div id="mobileDrawerRole" style="font-size: 10px; color: var(--emerald); font-weight: 600;">ACTIVE</div>
+        </div>
+      </div>
+      <button class="mobile-drawer-close-btn" onclick="closeMobileNav()">
+        <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <ul class="nav-list mobile-nav-list">
+      <li>
+        <button onclick="mobileSwitchTab('dashboard')" id="mobileNavBtnDashboard" class="nav-btn active">
+          <div class="left-grp">
+            <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            <span>Dashboard</span>
+          </div>
+        </button>
+      </li>
+      <li>
+        <button onclick="mobileSwitchTab('history')" id="mobileNavBtnHistory" class="nav-btn">
+          <div class="left-grp">
+            <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>Stream History</span>
+          </div>
+          <span id="mobileBadgeHistoryCount" class="badge" style="display: none;"></span>
+        </button>
+      </li>
+      <li>
+        <button onclick="mobileSwitchTab('accounts')" id="mobileNavBtnAccounts" class="nav-btn">
+          <div class="left-grp">
+            <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span>Accounts</span>
+          </div>
+          <span id="mobileBadgeAccountsCount" class="badge" style="display: none;"></span>
+        </button>
+      </li>
+      <li id="mobileNavItemProxies">
+        <button onclick="mobileSwitchTab('proxies')" id="mobileNavBtnProxies" class="nav-btn">
+          <div class="left-grp">
+            <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span>Proxy Pool</span>
+          </div>
+          <span id="mobileBadgeProxiesCount" class="badge" style="display: none;"></span>
+        </button>
+      </li>
+      <li id="mobileNavItemMessages">
+        <a href="messages.html" target="_blank" id="mobileNavBtnMessages" class="nav-btn" style="text-decoration: none;">
+          <div class="left-grp">
+            <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <span>Messages &amp; Sessions</span>
+          </div>
+          
+        </a>
+      </li>
+      <li id="mobileNavItemUsers">
+        <button onclick="mobileSwitchTab('users')" id="mobileNavBtnUsers" class="nav-btn">
+          <div class="left-grp">
+            <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-1.5 1.5L16 7l-1.5-1.5L13 7l-1.5-1.5L10 7M7 10l-4 4a5 5 0 1 0 7 0L7 10z"/></svg>
+            <span>Access &amp; Keys</span>
+          </div>
+          <span id="mobileBadgeRenewalCount" class="badge" style="display: none; background: #ef4444; color: white;"></span>
+        </button>
+      </li>
+    </ul>
+
+    <div class="mobile-drawer-footer">
+      <div id="mobileCurrentUserContainer" style="padding: 8px 10px; margin-bottom: 4px; background: rgba(255,255,255,0.04); border-radius: 8px; display: flex; align-items: center; justify-content: space-between; border: 1px solid rgba(255,255,255,0.08);">
+        <span id="mobileCurrentUserName" style="font-size: 12px; font-weight: 600; color: #fff; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">User</span>
+        <span id="mobileCurrentUserRoleBadge" class="badge" style="display: none; background: rgba(255,255,255,0.1); color: #fff; text-transform: uppercase; font-size: 9px; padding: 2px 6px;">ROLE</span>
+      </div>
+      <div style="font-size: 11px; color: var(--text-muted); text-align: center; margin-bottom: 8px;">
+        Release: <strong class="app-version-label" style="color: #fff; font-family: var(--font-mono);"></strong>
+      </div>
+      <button onclick="closeMobileNav(); openImportModal();" id="btnMobileImport" class="footer-btn">
+        <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span>Import JSON</span>
+      </button>
+      <button onclick="closeMobileNav(); exportAccountsBundle();" id="btnMobileExport" class="footer-btn">
+        <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <span>Export JSON</span>
+      </button>
+      <button onclick="closeMobileNav(); handleLogout();" class="footer-btn danger">
+        <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span>Disconnect</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="sidebar">
+    <div class="brand-section">
+      <div class="brand-icon">
+        <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      </div>
+      <div>
+        <div class="brand-title">Live Joiner Project</div>
+        <div style="display: flex; align-items: center; gap: 6px; margin-top: 3px;">
+          <span class="version-badge" id="appVersionBadge" style="display: none;"></span>
+        </div>
+      </div>
+    </div>
+
+    <ul class="nav-list">
+      <li>
+        <button onclick="switchTab('dashboard')" id="navBtnDashboard" class="nav-btn active">
+          <div class="left-grp">
+            <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            <span>Dashboard</span>
+          </div>
+        </button>
+      </li>
+      <li>
+        <button onclick="switchTab('history')" id="navBtnHistory" class="nav-btn">
+          <div class="left-grp">
+            <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>Stream History</span>
+          </div>
+          <span id="badgeHistoryCount" class="badge" style="display: none;"></span>
+        </button>
+      </li>
+      <li>
+        <button onclick="switchTab('accounts')" id="navBtnAccounts" class="nav-btn">
+          <div class="left-grp">
+            <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span>Accounts</span>
+          </div>
+          <span id="badgeAccountsCount" class="badge" style="display: none;"></span>
+        </button>
+      </li>
+      <li id="navItemProxies">
+        <button onclick="switchTab('proxies')" id="navBtnProxies" class="nav-btn">
+          <div class="left-grp">
+            <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span>Proxy Pool</span>
+          </div>
+          <span id="badgeProxiesCount" class="badge" style="display: none;"></span>
+        </button>
+      </li>
+      <li id="navItemMessages">
+        <a href="messages.html" target="_blank" id="navBtnMessages" class="nav-btn" style="text-decoration: none;">
+          <div class="left-grp">
+            <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <span>Messages &amp; Sessions</span>
+          </div>
+          <span class="badge" style="background: rgba(255, 255, 255, 0.1); color: #fff; font-size: 10px;">PRO</span>
+        </a>
+      </li>
+      <li id="navItemUsers">
+        <button onclick="switchTab('users')" id="navBtnUsers" class="nav-btn">
+          <div class="left-grp">
+            <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-1.5 1.5L16 7l-1.5-1.5L13 7l-1.5-1.5L10 7M7 10l-4 4a5 5 0 1 0 7 0L7 10z"/></svg>
+            <span>Access &amp; Keys</span>
+          </div>
+          <span id="badgeRenewalCount" class="badge" style="display: none; background: #ef4444; color: white;"></span>
+        </button>
+      </li>
+    </ul>
+
+    <div class="sidebar-footer">
+      <div id="currentUserBadgeContainer" style="padding: 6px 10px; margin-bottom: 8px; background: rgba(255,255,255,0.04); border-radius: 8px; display: flex; align-items: center; justify-content: space-between; border: 1px solid rgba(255,255,255,0.08);">
+        <span id="currentUserName" style="font-size: 11px; font-weight: 600; color: #fff; max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></span>
+        <span id="currentUserRoleBadge" class="badge" style="display: none; background: rgba(255,255,255,0.1); color: #fff; text-transform: uppercase; font-size: 9px; padding: 2px 6px;"></span>
+      </div>
+      <div style="font-size: 11px; color: var(--text-muted); text-align: center; margin-bottom: 2px;">
+        Release: <strong class="app-version-label" style="color: #fff; font-family: var(--font-mono);"></strong>
+      </div>
+      <button onclick="openImportModal()" id="btnSidebarImport" class="footer-btn" style="background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.1); color: #e4e4e7; font-weight: 600;">
+        <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span>Import JSON</span>
+      </button>
+      <button onclick="exportAccountsBundle()" id="btnSidebarExport" class="footer-btn" style="color: #e4e4e7; font-weight: 600;">
+        <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <span>Export JSON</span>
+      </button>
+      <button onclick="handleLogout()" class="footer-btn danger">
+        <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span>Disconnect</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN WORKSPACE -->
+  <main class="workspace">
+
+    <!-- Active Stream Real-Time Banner -->
+    <div id="activeStreamBanner" class="stream-banner">
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <div class="sound-waves"><span></span><span></span><span></span></div>
+        <div>
+          <div style="font-size: 14px; font-weight: 700; color: #fff;" id="bannerTitle">Active Live Stream</div>
+          <div style="font-size: 12px; color: var(--text-muted);" id="bannerSubtitle">Target : None</div>
+        </div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div style="font-family: var(--font-mono); font-size: 13px; font-weight: 600; color: var(--emerald); white-space: nowrap;" id="bannerTimer">Total UP Time : 00:00:00</div>
+        <button onclick="openChannelRosterModal()" class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;">
+          <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/></svg>
+          <span>Channels &amp; Members</span>
+        </button>
+        <button onclick="handleMasterLeaveAll()" class="btn btn-danger" style="padding: 6px 14px; font-size: 12px;">
+          <svg class="svg-icon sm" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="5" width="14" height="14" rx="2"/></svg>
+          <span>Leave All</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Top Telemetry Cards -->
+    <div class="stats-bar">
+      <div class="stat-card stat-card-clickable" onclick="openChannelRosterModal()" title="Click to view connected channels and member roster">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+          <div class="stat-title" style="margin-bottom: 0;">Active Listeners</div>
+          <span class="badge" style="background: rgba(255, 255, 255, 0.08); color: #e4e4e7; font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
+            <svg class="svg-icon xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <span>View Roster</span>
+          </span>
+        </div>
+        <div id="statInCallCount" class="stat-val">—</div>
+        <div id="statInCallSub" class="stat-meta">Active Listeners</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title">Server CPU</div>
+        <div id="statCpuVal" class="stat-val">—</div>
+        <div id="statCpuMeta" class="stat-meta"></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title">Server RAM</div>
+        <div id="statRamVal" class="stat-val">—</div>
+        <div id="statProcRamSub" class="stat-meta"></div>
+      </div>
+      <div id="statCardLatestTg" class="stat-card">
+        <div class="stat-title">Latest TG Desktop</div>
+        <div id="statLatestTgVal" class="stat-val" style="color: #fff; font-size: 15px; font-family: var(--font-mono); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">—</div>
+        <div class="stat-meta">Latest Release</div>
+      </div>
+      <div id="statCardStreamEngine" class="stat-card">
+        <div class="stat-title">Stream Status</div>
+        <div id="statStreamStatus" class="stat-val" style="color: #9ca3af; font-size: 16px; display: inline-flex; align-items: center; gap: 8px;">
+          <span class="pulse-dot idle"></span> <span>Idle</span>
+        </div>
+        <div id="statStreamTarget" class="stat-meta" style="color: #9ca3af; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;"></div>
+      </div>
+    </div>
+
+    <!-- TAB 1: DASHBOARD -->
+    <div id="tabDashboard" class="tab-content active">
+      <!-- Joined Channels in Grid Style UI (v1.1.0) -->
+      <div class="card" id="cardJoinedChannels">
+        <div class="card-header">
+          <div class="card-title" style="display: flex; align-items: center; gap: 10px;">
+            <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/></svg>
+            <span>Joined Channels &amp; Broadcasts</span>
+            <span id="channelCountBadge" class="badge" style="display: none; background: rgba(255, 255, 255, 0.08); color: #e4e4e7; font-size: 11px;"></span>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button onclick="fetchChannelRoster()" class="btn btn-secondary" style="padding: 5px 12px; font-size: 11px;">
+              <svg class="svg-icon xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+              <span>Refresh Channels</span>
+            </button>
+            <button onclick="handleMasterLeaveAll()" id="btnMasterStopTop" class="btn btn-danger" style="display: none; padding: 5px 12px; font-size: 11px;">
+              <svg class="svg-icon xs" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="5" width="14" height="14" rx="2"/></svg>
+              <span>Leave All Channels</span>
+            </button>
+          </div>
+        </div>
+        <div id="channelsGridContainer" class="channels-grid">
+          <div style="text-align: center; color: var(--text-muted); padding: 32px 20px; background: #080c14; border-radius: 8px; border: 1px dashed var(--card-border); grid-column: 1 / -1;">
+            <div style="width: 44px; height: 44px; border-radius: 50%; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 10px; color: var(--text-muted);">
+              <svg class="svg-icon lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/></svg>
+            </div>
+            <div style="font-size: 14px; font-weight: 600; color: #fff;">No Active Channel Broadcasts</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fleet Broadcast Commander Banner (v1.1.1) -->
+      <div class="card fleet-commander-banner" style="background: #09090b; border: 1px solid rgba(255, 255, 255, 0.08);">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); display: flex; align-items: center; justify-content: center; color: #fff;">
+              <svg class="svg-icon" style="width: 20px; height: 20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>
+            </div>
+            <div>
+              <div style="font-size: 16px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 8px;">
+                <span>Fleet Broadcast Commander</span>
+                <span id="dashFleetReadinessBadge" class="badge" style="background: rgba(255, 255, 255, 0.08); color: #e4e4e7; font-weight: 600;"></span>
+              </div>
+              <div style="font-size: 13px; color: var(--text-muted); margin-top: 5px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <span class="badge" style="background: rgba(255, 255, 255, 0.06); color: #fff; font-size: 11px;"><strong id="dashReadyFleetCount" style="font-family: var(--font-mono);">—</strong> Ready</span>
+                <span class="badge" style="background: rgba(255, 255, 255, 0.06); color: #fff; font-size: 11px;"><strong id="dashActiveStreamsCount" style="font-family: var(--font-mono);">—</strong> Active</span>
+              </div>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <button onclick="openAddStreamModal()" class="btn btn-primary" style="padding: 10px 20px; font-size: 13px; font-weight: 600;">
+              <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              <span>Add Live Stream</span>
+            </button>
+            <button onclick="handleMasterLeaveAll()" id="dashBtnLeaveAll" class="btn btn-danger" style="display: none; padding: 10px 16px; font-size: 13px;">
+              <svg class="svg-icon sm" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="5" width="14" height="14" rx="2"/></svg>
+              <span>Leave All Streams</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Activity Logs Card -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title" style="display: flex; align-items: center; gap: 8px;">
+            <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+            <span>Live Activity Feed</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <label style="font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; cursor: pointer;">
+              <input type="checkbox" id="checkAutoScroll" checked style="cursor: pointer;"> Auto-scroll
+            </label>
+            <button onclick="copyLogsToClipboard()" class="btn btn-secondary" style="padding: 4px 10px; font-size: 11px;">
+              <svg class="svg-icon xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              <span>Copy Logs</span>
+            </button>
+            <button onclick="clearLogs()" class="btn btn-secondary" style="padding: 4px 10px; font-size: 11px;">
+              <svg class="svg-icon xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              <span>Clear Feed</span>
+            </button>
+          </div>
+        </div>
+        <div id="logBox" class="log-box"></div>
+      </div>
+    </div>
+
+    <!-- TAB 2: TELEGRAM ACCOUNTS -->
+    <div id="tabAccounts" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title" style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span>Telegram Accounts</span>
+            <span id="titleAccountCount" class="badge" style="display: none; background: rgba(255, 255, 255, 0.08); color: #fff;"></span>
+            <span class="badge" style="background: rgba(255, 255, 255, 0.05); color: var(--text-muted); font-size: 11px; padding: 3px 8px; font-weight: 500;">
+              Latest TG Desktop: <strong id="topLatestTgVersion" style="color: #fff; font-family: var(--font-mono);">—</strong>
+            </span>
+          </div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;" class="card-actions-bar">
+            <button onclick="openAddAccountModal()" class="btn btn-emerald" style="padding: 7px 16px;">
+              <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              <span>Add Account</span>
+            </button>
+            <button onclick="handleUpdateDevices()" id="btnUpdateDevices" class="btn btn-secondary" style="padding: 7px 14px; border-color: rgba(255, 255, 255, 0.15); color: #fff;">
+              <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="2" y1="20" x2="22" y2="20"/></svg>
+              <span>Update Devices</span>
+            </button>
+            <button onclick="openImportModal()" class="btn btn-secondary" style="padding: 7px 14px;">
+              <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span>Import JSON</span>
+            </button>
+            <button onclick="exportAccountsBundle()" id="btnAccountsExport" class="btn btn-secondary" style="padding: 7px 14px;">
+              <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <span>Export JSON</span>
+            </button>
+            <button onclick="handleVerifyAll()" id="btnVerifyAll" class="btn btn-secondary" style="padding: 7px 14px;">
+              <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+              <span>Verify Sessions</span>
+            </button>
+            <button onclick="fetchAccounts(true)" class="btn btn-secondary" style="padding: 7px 14px;">
+              <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+              <span>Refresh</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Filter & Search Bar -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 12px; flex-wrap: wrap;" class="filter-search-bar">
+          <div style="display: flex; gap: 6px;">
+            <button onclick="filterAccountsByStatus('all')" class="btn-pill active" id="accFilterAll">All (<span id="cntAll"></span>)</button>
+            <button onclick="filterAccountsByStatus('in_call')" class="btn-pill" id="accFilterInCall">In Call (<span id="cntInCall"></span>)</button>
+            <button onclick="filterAccountsByStatus('ready')" class="btn-pill" id="accFilterReady">Ready (<span id="cntReady"></span>)</button>
+            <button onclick="filterAccountsByStatus('signed_out')" class="btn-pill" id="accFilterSignedOut">Signed Out (<span id="cntSignedOut"></span>)</button>
+          </div>
+          <div style="width: 280px;">
+            <input type="text" id="accSearchInput" oninput="handleAccountSearch()" placeholder="Search name, phone, proxy..." class="input-text" style="padding: 6px 12px; font-size: 12px;">
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Account Name</th>
+                <th>Phone Number</th>
+                <th>Assigned Proxy</th>
+                <th>Device &amp; TG Version</th>
+                <th>Joined Channel</th>
+                <th>Status</th>
+                <th style="text-align: right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="accountsTableBody">
+              <tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 30px;">Loading accounts...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: PROXY POOL -->
+    <div id="tabProxies" class="tab-content">
+      <!-- Import Notepad Card -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title" style="display: flex; align-items: center; gap: 8px;">
+            <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            <span>Multi-Line SOCKS5 Proxy Importer</span>
+          </div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 12px; max-width: 680px;">
+          <textarea id="proxyInputText" rows="4" placeholder="host:port:user:pass or socks5://user:pass@host:port (one per line)" class="input-text" style="font-family: var(--font-mono); resize: vertical;"></textarea>
+          <div>
+            <button onclick="submitProxyImport()" id="btnSubmitProxyImport" class="btn btn-primary">
+              <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span>Import Proxies to Pool</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Proxies List Card -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title" style="display: flex; align-items: center; gap: 10px;">
+            <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span>Active SOCKS5 Proxy Pool</span>
+            <span id="titleProxyCount" class="badge" style="display: none; background: rgba(255, 255, 255, 0.08); color: #fff;"></span>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button onclick="handleTestAllProxies()" id="btnTestProxies" class="btn btn-secondary" style="padding: 7px 14px;">
+              <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              <span>Test All Latencies</span>
+            </button>
+            <button onclick="fetchProxies()" class="btn btn-secondary" style="padding: 7px 14px;">
+              <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+              <span>Refresh</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Proxy Label</th>
+                <th>Host : Port</th>
+                <th>Ping / Latency</th>
+                <th>Assigned Load</th>
+                <th style="text-align: right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="proxiesTableBody">
+              <tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 30px;">Loading proxies...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: LIVE STREAM HISTORY (v1.1.1) -->
+    <div id="tabHistory" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title" style="display: flex; align-items: center; gap: 10px;">
+            <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>Live Stream Broadcast History</span>
+            <span id="historyTotalBadge" class="badge" style="display: none; background: rgba(255, 255, 255, 0.08); color: #fff; font-size: 11px;"></span>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button onclick="fetchStreamHistory()" class="btn btn-secondary" style="padding: 6px 14px; font-size: 12px;">
+              <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+              <span>Refresh History</span>
+            </button>
+            <button id="btnClearHistoryBtn" onclick="handleClearHistory()" class="btn btn-secondary" style="padding: 6px 14px; font-size: 12px; color: #f87171;">
+              <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              <span>Clear History</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Channel / Broadcast</th>
+                <th>Timeline</th>
+                <th>Duration</th>
+                <th>Fleet Size</th>
+                <th>Managed By</th>
+                <th>End Reason &amp; Incidents</th>
+                <th style="text-align: right;">Action</th>
+              </tr>
+            </thead>
+            <tbody id="historyTableBody">
+              <tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 30px;">Loading stream history...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 5: ACCESS & KEYS (RBAC) -->
+    <div id="tabUsers" class="tab-content">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;" class="users-grid-top">
+        <!-- Card 1: Generate Access Key -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title" style="display: flex; align-items: center; gap: 10px;">
+              <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-1.5 1.5L16 7l-1.5-1.5L13 7l-1.5-1.5L10 7M7 10l-4 4a5 5 0 1 0 7 0L7 10z"/></svg>
+              <span>Generate Access Key</span>
+            </div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 8px;">
+            <div>
+              <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">User / Device Name</label>
+              <input type="text" id="inputNewKeyName" placeholder="e.g. Alex (Operations)" class="input-text">
+            </div>
+            <div>
+              <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">Role Level</label>
+              <select id="selectNewKeyRole" class="input-text" style="background: #09090b;">
+                <option value="admin">Admin (Manage fleet &amp; members)</option>
+                <option value="member" selected>Member (View live stream fleet)</option>
+              </select>
+            </div>
+            <button onclick="handleGenerateKey()" id="btnGenerateKey" class="btn btn-primary" style="justify-content: center; padding: 10px; margin-top: 4px;">
+              <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              <span>Generate Access Key</span>
+            </button>
+            <div id="newKeyResultBox" style="display: none; background: #070b14; border: 1px solid #10b981; border-radius: 8px; padding: 12px; margin-top: 8px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <span style="font-size: 11px; font-weight: 700; color: #10b981;">KEY ENVELOPE (COPY ONCE):</span>
+                <button onclick="copyGeneratedKey()" class="btn-pill" style="padding: 2px 8px; font-size: 11px; background: rgba(16,185,129,0.2); color: #34d399; display: inline-flex; align-items: center; gap: 4px;">
+                  <svg class="svg-icon xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  <span>Copy</span>
+                </button>
+              </div>
+              <textarea id="textGeneratedKey" readonly style="width: 100%; height: 80px; font-family: var(--font-mono); font-size: 11px; background: transparent; border: none; color: #a7f3d0; resize: none; word-break: break-all; outline: none;"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: Pending Renewals -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title" style="display: flex; align-items: center; gap: 10px;">
+              <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span>Pending Session Renewals</span>
+              <span id="badgePendingRenewalsCount" class="badge" style="display: none; background: rgba(239, 68, 68, 0.2); color: #f87171; font-size: 11px;"></span>
+            </div>
+            <button onclick="fetchRenewalsList()" class="btn btn-secondary" style="padding: 4px 10px; font-size: 11px;">
+              <svg class="svg-icon xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+              <span>Refresh</span>
+            </button>
+          </div>
+          <div id="pendingRenewalsContainer" style="display: flex; flex-direction: column; gap: 8px; max-height: 240px; overflow-y: auto; margin-top: 8px;">
+            <div style="text-align: center; color: var(--text-muted); padding: 30px;">No pending renewal requests.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3: Authorized Users List -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title" style="display: flex; align-items: center; gap: 10px;">
+            <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span>Authorized Users &amp; Paired Devices</span>
+            <span id="badgeUsersCount" class="badge" style="display: none; background: rgba(255, 255, 255, 0.08); color: #fff; font-size: 11px;"></span>
+          </div>
+          <button onclick="fetchUsersList()" class="btn btn-secondary" style="padding: 6px 14px; font-size: 12px;">
+            <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+            <span>Refresh Users</span>
+          </button>
+        </div>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>User / Device Name</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Last Request IP</th>
+                <th>Session Expiry (30d)</th>
+                <th>Last Active</th>
+                <th style="text-align: right;">Action</th>
+              </tr>
+            </thead>
+            <tbody id="usersTableBody">
+              <tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 30px;">Loading users...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ==================== CHANNEL CONNECTIONS & MEMBER ROSTER MODAL ==================== -->
+  <!-- Future Multi-Channel Join: expandable list structure prepared for distributing accounts across multiple channels simultaneously -->
+  <div id="channelRosterModal" class="modal-overlay hidden" onclick="handleModalOverlayClick(event, 'channelRosterModal')">
+    <div class="modal-card" style="max-width: 960px; width: 95%; max-height: 88vh; display: flex; flex-direction: column;">
+      <button class="modal-close-btn" onclick="closeChannelRosterModal()" aria-label="Close modal" title="Close">
+        <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="card-header" style="margin-bottom: 8px; flex-shrink: 0; padding-right: 44px;">
+        <div class="modal-title" style="display: flex; align-items: center; gap: 8px;">
+          <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/></svg>
+          <span>Channel Connections &amp; Listener Roster</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <button onclick="fetchChannelRoster()" id="btnRefreshRoster" class="btn btn-secondary" style="padding: 5px 12px; font-size: 11px;">
+            <svg class="svg-icon xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+            <span>Refresh Roster</span>
+          </button>
+        </div>
+      </div>
+
+      <div id="channelRosterContainer" style="overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 16px; padding-right: 4px; margin-top: 6px;">
+        <div style="text-align: center; color: var(--text-muted); padding: 40px;">
+          Loading channel and listener roster...
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== ADD LIVE STREAM & FLEET ALLOCATION MODAL (v1.1.1) ==================== -->
+  <div id="addStreamModal" class="modal-overlay hidden" onclick="handleModalOverlayClick(event, 'addStreamModal')">
+    <div class="modal-card" style="max-width: 920px; width: 95%; max-height: 90vh; display: flex; flex-direction: column;">
+      <button class="modal-close-btn" onclick="closeAddStreamModal()" aria-label="Close modal" title="Close">
+        <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="card-header" style="margin-bottom: 12px; flex-shrink: 0; padding-right: 44px;">
+        <div class="modal-title" style="display: flex; align-items: center; gap: 8px;">
+          <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>
+          <span>Start Live Broadcast &amp; Allocate Fleet</span>
+        </div>
+      </div>
+
+      <div style="overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 16px; padding-right: 4px;">
+        <!-- Target Channel Input -->
+        <div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+            <label style="font-size: 12px; color: var(--text-muted);">Telegram Live Stream Channel Link / Username</label>
+            <button onclick="handlePasteTarget()" class="btn-pill" style="padding: 2px 8px; font-size: 11px; display: inline-flex; align-items: center; gap: 4px;">
+              <svg class="svg-icon xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              <span>Paste</span>
+            </button>
+          </div>
+          <input type="text" id="inputTargetLink" placeholder="https://t.me/+F658vma... or https://t.me/channel" class="input-text">
+        </div>
+
+        <!-- Auto-join Checkbox -->
+        <div style="display: flex; align-items: center; gap: 10px; background: #09090b; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--card-border);">
+          <input type="checkbox" id="checkJoinChannel" checked style="width: 16px; height: 16px; cursor: pointer;">
+          <label for="checkJoinChannel" style="font-size: 13px; color: var(--text); cursor: pointer;">
+            Auto-join channel first if private / invite link
+          </label>
+        </div>
+
+        <!-- Channel Reactions & Engagement Settings (v2.2.1_test) -->
+        <div style="display: flex; flex-direction: column; gap: 12px; background: #09090b; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.08);">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+            <div style="font-size: 13px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 6px;">
+              <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <span>Channel Post Engagement &amp; Auto-Reactions</span>
+            </div>
+            <span style="font-size: 11px; color: #94a3b8; display: flex; align-items: center; gap: 4px;">
+              <svg class="svg-icon xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <code style="color: #fff; font-size: 10px; background: rgba(255, 255, 255, 0.08); padding: 1px 5px; border-radius: 3px;">emojiblacklist.json</code> active
+            </span>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 280px; gap: 16px; align-items: start;" class="reaction-grid-layout">
+            <!-- Left: Checkboxes & Global Auto-Seen info -->
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" id="checkReactLast5" style="width: 16px; height: 16px; cursor: pointer;">
+                <label for="checkReactLast5" style="font-size: 13px; color: var(--text); cursor: pointer; user-select: none;">
+                  React Last 5 messages when joining
+                </label>
+              </div>
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" id="checkKeepReacting" style="width: 16px; height: 16px; cursor: pointer;">
+                <label for="checkKeepReacting" style="font-size: 13px; color: var(--text); cursor: pointer; user-select: none;">
+                  Keep Reacting until the Live Stream Ends
+                </label>
+              </div>
+            </div>
+
+            <!-- Right: Reaction Mode Sidebar Selector -->
+            <div style="background: #000; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 10px 12px; display: flex; flex-direction: column; gap: 7px;">
+              <div style="font-size: 11px; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">
+                Reaction Type:
+              </div>
+              <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #e2e8f0; cursor: pointer;">
+                <input type="radio" name="reactionMode" value="0" checked style="cursor: pointer;">
+                <span>Random</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #e2e8f0; cursor: pointer;">
+                <input type="radio" name="reactionMode" value="1" style="cursor: pointer;">
+                <span>Only Heart</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #e2e8f0; cursor: pointer;">
+                <input type="radio" name="reactionMode" value="2" style="cursor: pointer;">
+                <span>Only Fire</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #e2e8f0; cursor: pointer;">
+                <input type="radio" name="reactionMode" value="3" style="cursor: pointer;">
+                <span>Care</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Member Allocation Slider (Balanced Selection) -->
+        <div style="background: #09090b; padding: 14px 16px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.08);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+            <div>
+              <label style="font-size: 12px; color: #94a3b8; display: block; margin-bottom: 2px;">Members to Allocate</label>
+              <div style="font-size: 16px; font-weight: 700; color: #fff;">
+                <span id="sliderCountVal" style="color: #fff; font-family: var(--font-mono); font-size: 20px;">0</span>
+                <span style="font-size: 13px; color: #94a3b8; font-weight: 500;">/ <span id="availableCountTotal">0</span> available</span>
+              </div>
+            </div>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+              <button type="button" onclick="setCountPreset(5)" class="btn-pill" id="preset5">5</button>
+              <button type="button" onclick="setCountPreset(10)" class="btn-pill" id="preset10">10</button>
+              <button type="button" onclick="setCountPreset(20)" class="btn-pill active" id="preset20">20</button>
+              <button type="button" onclick="setCountPreset(30)" class="btn-pill" id="preset30">30</button>
+              <button type="button" onclick="setCountPreset('all')" class="btn-pill" id="presetAll">All</button>
+              <button type="button" onclick="rebalanceFleetSelection()" class="btn-pill" style="color: #e4e4e7; border-color: rgba(255, 255, 255, 0.2); display: inline-flex; align-items: center; gap: 4px;" title="Reshuffle low and high latency balanced selection">
+                <svg class="svg-icon xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                <span>Re-balance</span>
+              </button>
+            </div>
+          </div>
+          <input type="range" id="memberAllocationSlider" class="custom-range-slider" min="1" max="40" value="20" oninput="handleSliderChange(this.value)">
+          <div style="margin-top: 8px; display: flex; align-items: center; justify-content: flex-end;">
+            <span id="basketBalanceBadge" class="badge" style="background: rgba(255, 255, 255, 0.08); color: #fff; font-size: 10px; padding: 2px 7px;">0 Low Ping • 0 High Ping</span>
+          </div>
+        </div>
+
+        <!-- Basket 1: Selected Members to Join in Invisible Grid UI -->
+        <div style="background: #080c14; border: 1px solid var(--card-border); border-radius: 10px; padding: 12px 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 6px;">
+            <div style="font-size: 13px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 6px;">
+              <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+              <span>Selected Members to Join</span> (<span id="basketSelectedCount" style="color: #fff;">0</span>)
+            </div>
+          </div>
+          <div id="selectedBasketGrid" class="member-basket-grid">
+            <div style="text-align: center; color: var(--text-muted); padding: 20px; grid-column: 1 / -1; font-size: 12px;">Loading fleet members...</div>
+          </div>
+        </div>
+
+        <!-- Basket 2: Available Reserve Accounts in Invisible Grid UI -->
+        <div style="background: #080c14; border: 1px solid var(--card-border); border-radius: 10px; padding: 12px 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 6px;">
+            <div style="font-size: 13px; font-weight: 700; color: #94a3b8; display: flex; align-items: center; gap: 6px;">
+              <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              <span>Available Reserve Accounts</span> (<span id="availableReserveCount" style="color: #fff;">0</span> in reserve)
+            </div>
+          </div>
+          <div id="availableReserveGrid" class="member-basket-grid">
+            <div style="text-align: center; color: var(--text-muted); padding: 20px; grid-column: 1 / -1; font-size: 12px;">No reserve accounts left.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--card-border); flex-shrink: 0;">
+        <button type="button" onclick="closeAddStreamModal()" class="btn btn-secondary">
+          Cancel
+        </button>
+        <button type="button" onclick="handleStartJoin()" id="btnStartJoin" class="btn btn-primary" style="padding: 10px 24px; font-size: 13px; font-weight: 600;">
+          <svg class="svg-icon sm" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+          <span>Start Listening</span> (<span id="btnJoinCountSpan">0</span> Members)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== STREAM HISTORY DETAILS MODAL (v1.1.1) ==================== -->
+  <div id="historyDetailsModal" class="modal-overlay hidden" onclick="handleModalOverlayClick(event, 'historyDetailsModal')">
+    <div class="modal-card" style="max-width: 960px; width: 95%; max-height: 88vh; display: flex; flex-direction: column;">
+      <button class="modal-close-btn" onclick="closeHistoryDetailModal()" aria-label="Close modal" title="Close">
+        <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="card-header" style="margin-bottom: 8px; flex-shrink: 0; padding-right: 44px;">
+        <div class="modal-title" style="display: flex; align-items: center; gap: 8px;">
+          <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span id="histModalTitle">Broadcast Session Details</span>
+        </div>
+      </div>
+
+      <div id="histModalBody" style="overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 14px; padding-right: 4px;">
+        <div style="text-align: center; color: var(--text-muted); padding: 40px;">
+          Loading session details...
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== UNIVERSAL IMPORT MODAL ==================== -->
+  <div id="importModal" class="modal-overlay hidden" onclick="handleModalOverlayClick(event, 'importModal')">
+    <div class="modal-card">
+      <button class="modal-close-btn" onclick="closeImportModal()" aria-label="Close modal" title="Close">
+        <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="card-header" style="margin-bottom: 14px; padding-right: 44px;">
+        <div class="modal-title" style="display: flex; align-items: center; gap: 8px;">
+          <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span>Import Accounts &amp; Proxies</span>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <div>
+          <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 6px;">Select JSON File</label>
+          <input type="file" id="fileJsonInput" accept=".json" class="input-text" style="cursor: pointer;">
+        </div>
+
+        <div>
+          <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 6px;">Or Paste Raw JSON</label>
+          <textarea id="textJsonInput" rows="5" placeholder='{"accounts": [...], "proxies": [...]}' class="input-text" style="font-family: var(--font-mono); resize: vertical;"></textarea>
+        </div>
+
+        <div id="importAlertBox" style="display: none; padding: 10px 14px; border-radius: 6px; font-size: 12px;"></div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
+          <button onclick="closeImportModal()" class="btn btn-secondary">Cancel</button>
+          <button onclick="executeBundleImport()" id="btnExecuteImport" class="btn btn-emerald">
+            <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>Import Now</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== ADD TELEGRAM ACCOUNT MODAL ==================== -->
+  <div id="addAccountModal" class="modal-overlay hidden" onclick="handleModalOverlayClick(event, 'addAccountModal')">
+    <div class="modal-card" style="max-width: 480px;">
+      <button class="modal-close-btn" onclick="closeAddAccountModal()" aria-label="Close modal" title="Close">
+        <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="card-header" style="margin-bottom: 14px; padding-right: 44px;">
+        <div class="modal-title" style="display: flex; align-items: center; gap: 8px;">
+          <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <span>Add Telegram Account</span>
+        </div>
+      </div>
+
+      <!-- STEP 1: Phone, Proxy, Device & TG Version -->
+      <div id="addAccStep1" style="display: flex; flex-direction: column; gap: 14px;">
+        <div>
+          <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 6px;">Telegram Phone Number (with country code)</label>
+          <input type="text" id="addAccPhone" placeholder="+1234567890" class="input-text" style="font-family: var(--font-mono); font-size: 14px;" onkeydown="if(event.key==='Enter') executeSendAddAccCode()">
+        </div>
+
+        <!-- PROXY SELECTION (Custom UI, strictly max 5 accounts, no direct, no [auto select] placeholder) -->
+        <div>
+          <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 6px;">
+            Assigned Proxy
+          </label>
+          <div id="proxyCapacityWarning" style="display: none; padding: 12px 14px; background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.35); border-radius: 8px; font-size: 12px; color: #fca5a5; margin-bottom: 6px; line-height: 1.4;">
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <svg class="svg-icon xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              <strong>Proxy Capacity Exhausted:</strong>
+            </div>
+            All proxies have reached the maximum capacity of 5 accounts each (or no proxies exist). You must add more proxies to onboard accounts.
+            <div style="margin-top: 8px;">
+              <button type="button" onclick="closeAddAccountModal(); switchTab('proxies');" class="btn btn-secondary" style="padding: 4px 10px; font-size: 11px; color: #fff;">
+                Open Proxy Pool &amp; Add Proxies
+              </button>
+            </div>
+          </div>
+          <div id="customProxyDropdownContainer" style="position: relative;">
+            <div id="customProxyTrigger" onclick="toggleProxyDropdown(event)" class="custom-select-trigger">
+              <span id="customProxyTriggerText">Loading proxies...</span>
+              <span style="font-size: 10px; color: var(--text-muted);">▼</span>
+            </div>
+            <div id="customProxyMenu" class="custom-select-menu" style="max-height: 220px; overflow-y: auto;">
+              <!-- Populated dynamically with real HTML elements -->
+            </div>
+          </div>
+        </div>
+
+        <!-- DEVICE MODEL SELECTION (Custom UI, Priority 1: server-wide unique, Priority 2: proxy-unique) -->
+        <div>
+          <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 6px;">
+            Device Name
+          </label>
+          <div id="customDeviceDropdownContainer" style="position: relative;">
+            <div id="customDeviceTrigger" onclick="toggleDeviceDropdown(event)" class="custom-select-trigger">
+              <span id="customDeviceTriggerText">Loading devices...</span>
+              <span style="font-size: 10px; color: var(--text-muted);">▼</span>
+            </div>
+            <div id="customDeviceMenu" class="custom-select-menu" style="max-height: 280px;">
+              <div style="padding: 6px 8px; border-bottom: 1px solid var(--card-border); background: #0c121e; position: sticky; top: 0; z-index: 10;">
+                <input type="text" id="deviceSearchInput" placeholder="Search device name..." class="input-text" style="padding: 5px 10px; font-size: 12px;" onclick="event.stopPropagation()" oninput="handleDeviceSearch(this.value)">
+              </div>
+              <div id="customDeviceItemsList" style="overflow-y: auto; max-height: 210px;">
+                <!-- Populated dynamically with real HTML elements -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TELEGRAM APPLICATION VERSION -->
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <label style="font-size: 12px; color: var(--text-muted);">Application Version</label>
+            <span id="tgVersionModalBadge" class="badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399; font-size: 10px; padding: 1px 6px;">Official Release</span>
+          </div>
+          <input type="text" id="addAccTgVersion" class="input-text" style="font-family: var(--font-mono); font-size: 13px;" value="7.3.1 x64">
+        </div>
+
+        <div id="addAccAlert1" style="display: none; padding: 10px 14px; border-radius: 6px; font-size: 12px;"></div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 6px;">
+          <button onclick="closeAddAccountModal()" class="btn btn-secondary">Cancel</button>
+          <button onclick="executeSendAddAccCode()" id="btnAddAccSendCode" class="btn btn-emerald">
+            <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <span>Send Verification Code</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 2: Code Verification -->
+      <div id="addAccStep2" style="display: none; flex-direction: column; gap: 14px;">
+        <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 10px 14px; font-size: 12px; color: #e4e4e7; line-height: 1.4; display: flex; align-items: center; gap: 8px;">
+          <svg class="svg-icon xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <div>Verification code sent to Telegram app / SMS for <strong id="addAccPhoneLabel" style="font-family: var(--font-mono); color: #fff;"></strong>.</div>
+        </div>
+
+        <div>
+          <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 6px;">Enter Verification Code</label>
+          <input type="text" id="addAccCode" placeholder="12345" class="input-text" style="font-family: var(--font-mono); font-size: 16px; letter-spacing: 2px; text-align: center;" onkeydown="if(event.key==='Enter') executeSubmitAddAccCode()">
+        </div>
+
+        <div id="addAccAlert2" style="display: none; padding: 10px 14px; border-radius: 6px; font-size: 12px;"></div>
+
+        <div style="display: flex; justify-content: space-between; gap: 10px; margin-top: 6px;">
+          <button onclick="resetAddAccountModal()" class="btn btn-secondary" style="display: inline-flex; align-items: center; gap: 6px;">
+            <svg class="svg-icon xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            <span>Back</span>
+          </button>
+          <button onclick="executeSubmitAddAccCode()" id="btnAddAccVerifyCode" class="btn btn-emerald">
+            <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-1.5 1.5L16 7l-1.5-1.5L13 7l-1.5-1.5L10 7M7 10l-4 4a5 5 0 1 0 7 0L7 10z"/></svg>
+            <span>Verify &amp; Sign In</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 3: 2FA Password -->
+      <div id="addAccStep3" style="display: none; flex-direction: column; gap: 14px;">
+        <div style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 8px; padding: 10px 14px; font-size: 12px; color: #fbbf24; line-height: 1.4;">
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <svg class="svg-icon xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <strong>Two-Step Verification (2FA) is enabled on this account.</strong>
+          </div>
+          Please enter your password.
+          <div id="addAcc2faHint" style="font-size: 11px; color: #fcd34d; margin-top: 4px; display: none;"></div>
+        </div>
+
+        <div>
+          <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 6px;">Two-Step Password</label>
+          <input type="password" id="addAccPassword" placeholder="Enter 2FA password" class="input-text" style="font-size: 14px;" onkeydown="if(event.key==='Enter') executeSubmitAddAcc2FA()">
+        </div>
+
+        <div id="addAccAlert3" style="display: none; padding: 10px 14px; border-radius: 6px; font-size: 12px;"></div>
+
+        <div style="display: flex; justify-content: space-between; gap: 10px; margin-top: 6px;">
+          <button onclick="resetAddAccountModal()" class="btn btn-secondary">Cancel</button>
+          <button onclick="executeSubmitAddAcc2FA()" id="btnAddAccSubmit2FA" class="btn btn-emerald">
+            <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+            <span>Complete Sign In</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== EDIT ACCOUNT PROFILE & AVATAR MODAL ==================== -->
+  <div id="editAccountModal" class="modal-overlay hidden" onclick="handleModalOverlayClick(event, 'editAccountModal')">
+    <div class="modal-card" style="max-width: 500px; width: 95%;">
+      <button class="modal-close-btn" onclick="closeEditAccountModal()" aria-label="Close modal" title="Close">
+        <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="card-header" style="margin-bottom: 14px; padding-right: 44px;">
+        <div class="modal-title" style="display: flex; align-items: center; gap: 8px;">
+          <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          <span>Edit Telegram Profile &amp; Avatar</span>
+        </div>
+      </div>
+
+      <form id="editAccountForm" onsubmit="handleSaveEditAccount(event)">
+        <input type="hidden" id="editAccountId">
+
+        <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 18px; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 10px; border: 1px dashed var(--card-border);">
+          <div id="editAccountAvatarBox" style="width: 60px; height: 60px; border-radius: 50%; overflow: hidden; background: #18181b; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: #fff; flex-shrink: 0; position: relative; border: 2px solid rgba(255,255,255,0.15);">
+            <img id="editAccountAvatarPreviewImg" src="" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+            <span id="editAccountAvatarInitial">?</span>
+          </div>
+          <div style="flex: 1;">
+            <input type="file" id="editAccountAvatarFile" accept="image/png, image/jpeg, image/webp" onchange="handleEditAvatarSelect(this)" style="display: none;">
+            <button type="button" class="btn btn-secondary" onclick="document.getElementById('editAccountAvatarFile').click()" style="padding: 6px 12px; font-size: 12px; display: inline-flex; align-items: center; gap: 6px;">
+              <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              <span>Choose New Photo</span>
+            </button>
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">JPG, PNG, WEBP (Max 10MB)</div>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
+          <div>
+            <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">First Name *</label>
+            <input type="text" id="editAccountFirstName" required class="input-text" style="font-size: 13px;" placeholder="First name">
+          </div>
+          <div>
+            <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">Last Name (Optional)</label>
+            <input type="text" id="editAccountLastName" class="input-text" style="font-size: 13px;" placeholder="Last name">
+          </div>
+          <div>
+            <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">Bio / About (Optional)</label>
+            <input type="text" id="editAccountAbout" class="input-text" style="font-size: 13px;" placeholder="Profile bio">
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+          <button type="button" onclick="closeEditAccountModal()" class="btn btn-secondary" style="padding: 8px 16px;">Cancel</button>
+          <button type="submit" id="btnSaveEditAccount" class="btn btn-primary" style="padding: 8px 18px; display: inline-flex; align-items: center; gap: 6px;">
+            <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Save Changes</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== CRYPTOGRAPHIC KEY PAIRING MODAL ==================== -->
+  <div id="authModal" class="modal-overlay hidden" onclick="handleModalOverlayClick(event, 'authModal')">
+    <div class="modal-card" style="max-width: 520px; text-align: center;">
+      <button class="modal-close-btn" onclick="hideAuthModal()" aria-label="Close modal" title="Close">
+        <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div style="width: 54px; height: 54px; border-radius: 16px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px; color: #fff;">
+        <svg class="svg-icon lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      </div>
+      <div id="authModalTitle" class="modal-title" style="justify-content: center; font-size: 18px;">
+        Connect to Live Stream Joiner
+      </div>
+      <p id="authModalDesc" class="modal-desc" style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+        Paste your cryptographic access key phrase (<code style="color: #fff; font-size: 11px;">SA-SHAV-v999://...</code>) to pair this device.
+      </p>
+
+      <div style="display: flex; flex-direction: column; gap: 14px; text-align: left;">
+        <div>
+          <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 5px;">Access Key Phrase</label>
+          <textarea id="inputAccessKey" placeholder="Paste your SA-SHAV-v999://... key phrase here" class="input-text" style="height: 100px; font-family: var(--font-mono); font-size: 12px; resize: none; word-break: break-all; padding: 10px;"></textarea>
+        </div>
+
+        <div>
+          <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 5px;">Device / Browser Label (Optional)</label>
+          <input type="text" id="inputDeviceLabel" placeholder="e.g. Chrome on Windows" class="input-text" style="font-size: 13px;">
+        </div>
+
+        <div id="authAlertBox" style="display: none; color: #f87171; font-size: 12px; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); border-radius: 6px; padding: 10px;"></div>
+
+        <button onclick="submitKeyPairing()" id="btnSubmitAuth" class="btn btn-primary" style="justify-content: center; padding: 12px; font-size: 14px; font-weight: 700; margin-top: 4px; display: flex; align-items: center; gap: 8px;">
+          <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          <span>Pair &amp; Unlock Dashboard</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SESSION EXPIRED & RENEWAL MODAL ==================== -->
+  <div id="sessionExpiredModal" class="modal-overlay hidden" onclick="handleModalOverlayClick(event, 'sessionExpiredModal')">
+    <div class="modal-card" style="max-width: 480px; text-align: center;">
+      <button class="modal-close-btn" onclick="hideSessionExpiredModal()" aria-label="Close modal" title="Close">
+        <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div style="width: 54px; height: 54px; border-radius: 16px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.25); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px; color: #f87171;">
+        <svg class="svg-icon lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </div>
+      <div id="expiredModalTitle" class="modal-title" style="justify-content: center; font-size: 18px; color: #f87171;">
+        Session Expired (30 Days)
+      </div>
+      <p id="expiredModalDesc" class="modal-desc" style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px; line-height: 1.5;">
+        Your 1-month session has completed. To continue using the dashboard, your access must be renewed.
+      </p>
+
+      <div id="expiredRoleSpecificContainer" style="display: flex; flex-direction: column; gap: 14px; margin-bottom: 14px;">
+        <!-- Injected dynamically based on role (Member / Admin / Creator) -->
+      </div>
+
+      <div style="display: flex; justify-content: center; gap: 10px;">
+        <button onclick="handleLogout()" class="btn btn-secondary" style="padding: 10px 18px;">
+          Switch Account / New Key
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT APP LOGIC -->
+  <script src="app.js?v=3"></script>
+</body>
+</html>
