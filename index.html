@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#121214">
   <title>Live Joiner Project</title>
-   <link rel="stylesheet" href="style.css?v=2">
+   <link rel="stylesheet" href="style.css?v=22">
 </head>
 <body>
 
@@ -237,6 +237,10 @@
         <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         <span>Disconnect</span>
       </button>
+      <button onclick="handleServerRestart()" id="btnSidebarRestart" class="footer-btn warning" style="display: none; background: rgba(245, 158, 11, 0.08); border-color: rgba(245, 158, 11, 0.25); color: #fbbf24; font-weight: 600;">
+        <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+        <span>Restart Server</span>
+      </button>
     </div>
   </aside>
 
@@ -279,7 +283,13 @@
         <div id="statInCallSub" class="stat-meta">Active Listeners</div>
       </div>
       <div class="stat-card">
-        <div class="stat-title">Server CPU</div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+          <div class="stat-title" style="margin-bottom: 0;">Server CPU</div>
+          <button onclick="handleServerRestart()" id="btnStatRestart" title="Restart Service Process (Creator Only)" style="display: none; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.25); color: #fbbf24; border-radius: 6px; padding: 2px 6px; font-size: 10px; cursor: pointer; align-items: center; gap: 3px;">
+            <svg class="svg-icon xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+            <span>Restart</span>
+          </button>
+        </div>
         <div id="statCpuVal" class="stat-val">—</div>
         <div id="statCpuMeta" class="stat-meta"></div>
       </div>
@@ -1172,6 +1182,6 @@
   </div>
 
   <!-- JAVASCRIPT APP LOGIC -->
-  <script src="app.js?v=3"></script>
+  <script src="app.js?v=22"></script>
 </body>
 </html>
