@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#121214">
   <title>Live Joiner Project</title>
-   <link rel="stylesheet" href="style.css?v=1010">
+   <link rel="stylesheet" href="style.css?v=5555">
 </head>
 <body>
 
@@ -23,6 +23,11 @@
       <div class="boot-loader-brand">Live Joiner Fleet</div>
       <div id="bootStatusText" class="boot-status-text">Connecting to Live Joiner...</div>
       <div id="bootSubText" class="boot-sub-text">Securing cryptographic connection...</div>
+      <div id="bootActionContainer" style="margin-top: 18px; display: none;">
+        <button type="button" onclick="handleEmergencyClearData()" class="btn btn-danger" style="padding: 8px 18px; font-size: 12px; font-weight: 600; border-radius: 6px; cursor: pointer;">
+          Clear Stored Data &amp; Reset
+        </button>
+      </div>
     </div>
   </div>
 
@@ -326,10 +331,7 @@
               <svg class="svg-icon xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
               <span>Refresh Channels</span>
             </button>
-            <button onclick="handleMasterLeaveAll()" id="btnMasterStopTop" class="btn btn-danger" style="display: none; padding: 5px 12px; font-size: 11px;">
-              <svg class="svg-icon xs" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="5" width="14" height="14" rx="2"/></svg>
-              <span>Leave All Channels</span>
-            </button>
+
           </div>
         </div>
         <div id="channelsGridContainer" class="channels-grid">
@@ -365,10 +367,7 @@
               <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               <span>Add Live Stream</span>
             </button>
-            <button onclick="handleMasterLeaveAll()" id="dashBtnLeaveAll" class="btn btn-danger" style="display: none; padding: 10px 16px; font-size: 13px;">
-              <svg class="svg-icon sm" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="5" width="14" height="14" rx="2"/></svg>
-              <span>Leave All Streams</span>
-            </button>
+
           </div>
         </div>
       </div>
@@ -571,6 +570,11 @@
             </tbody>
           </table>
         </div>
+        <div id="historyLoadMoreContainer" style="display: none; text-align: center; padding: 16px 0;">
+          <button type="button" onclick="handleLoadMoreHistory()" id="btnLoadMoreHistory" class="btn btn-secondary" style="padding: 8px 24px; font-size: 12px; margin: 0 auto; display: inline-flex; align-items: center; gap: 6px;">
+            <span>Load More Broadcasts (+5)</span>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -710,7 +714,7 @@
             <svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>
             <span>Start Live Broadcast &amp; Allocate Fleet</span>
           </div>
-          <span class="badge" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; font-size: 11px; padding: 2px 8px; font-weight: 600; border: 1px solid rgba(56, 189, 248, 0.3);">⚡ Multi-Stream Ready (v3.1.0)</span>
+          <span class="badge" style="background: rgba(56, 189, 248, 0.15); color: #38bdf8; font-size: 11px; padding: 2px 8px; font-weight: 600; border: 1px solid rgba(56, 189, 248, 0.3);">⚡ Multi-Stream Fleet (v3.4.0)</span>
         </div>
       </div>
 
@@ -1190,6 +1194,6 @@
   </div>
 
   <!-- JAVASCRIPT APP LOGIC -->
-  <script src="app.js?v=1010"></script>
+  <script src="app.js?v=5555"></script>
 </body>
 </html>
