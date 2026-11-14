@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#121214">
   <title>Live Joiner Project</title>
-   <link rel="stylesheet" href="style.css">
+   <link rel="stylesheet" href="style.css?v=6432534">
 </head>
 <body>
 
@@ -546,6 +546,7 @@
             <button onclick="filterAccountsByStatus('all')" class="btn-pill active" id="accFilterAll">All (<span id="cntAll"></span>)</button>
             <button onclick="filterAccountsByStatus('in_call')" class="btn-pill" id="accFilterInCall">In Call (<span id="cntInCall"></span>)</button>
             <button onclick="filterAccountsByStatus('ready')" class="btn-pill" id="accFilterReady">Ready (<span id="cntReady"></span>)</button>
+            <button onclick="filterAccountsByStatus('frozen')" class="btn-pill" id="accFilterFrozen">❄️ Frozen (<span id="cntFrozen">0</span>)</button>
             <button onclick="filterAccountsByStatus('signed_out')" class="btn-pill" id="accFilterSignedOut">Signed Out (<span id="cntSignedOut"></span>)</button>
           </div>
           <div style="width: 280px;">
@@ -1237,7 +1238,7 @@
 
   <!-- ==================== ORDER TELEMETRY & DETAILS MODAL ==================== -->
   <div id="orderTelemetryModal" class="modal-overlay hidden" onclick="handleModalOverlayClick(event, 'orderTelemetryModal')">
-    <div class="modal-card" style="max-width: 720px; width: 95%; max-height: 85vh; display: flex; flex-direction: column;">
+    <div class="modal-card" style="max-width: 960px; width: 95%; max-height: 88vh; display: flex; flex-direction: column;">
       <button class="modal-close-btn" onclick="closeOrderTelemetryModal()" aria-label="Close modal" title="Close">
         <svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
@@ -1322,6 +1323,6 @@
   </div>
 
   <!-- JAVASCRIPT APP LOGIC -->
-  <script src="app.js?v=112435"></script>
+  <script src="app.js?v=4362346"></script>
 </body>
 </html>
